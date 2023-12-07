@@ -1,0 +1,7 @@
+**/*.js
+**/*.d.ts
+bin
+config
+node_modules
+resources
+tests
