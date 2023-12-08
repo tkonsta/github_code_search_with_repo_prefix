@@ -11,7 +11,15 @@ if (!ORG_NAME || !REPO_PREFIX || !CODE_SEARCH_KEYWORD) {
     exit(1);
 }
 
-console.log(`Searching for ${CODE_SEARCH_KEYWORD} in organization ${ORG_NAME} and repo-prefix ${REPO_PREFIX}`);
+interface CodeSearchResult {
+    repositoryName: string;
+    itemPath: string;
+    itemHtmlUrl: string;
+}
+
+console.log(
+    `\n------------------\nSearching for ${CODE_SEARCH_KEYWORD} in organization ${ORG_NAME} and repo-prefix ${REPO_PREFIX}\n------------------\n`
+);
 
 const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN,
@@ -45,40 +53,46 @@ const octokit = new Octokit({
 });
 
 (async () => {
+    console.log("Starting");
     const repos: string[] = [];
 
     try {
-        octokit.log.warn("Starting");
-        let q = `org:${ORG_NAME} ${REPO_PREFIX}`;
-        let res = await octokit.rest.search.repos({
-            q,
-        });
+        let q = `org:${ORG_NAME} ${REPO_PREFIX} in:name fork:true`;
+        let parameters = { q };
 
-        if (res.status == 200) {
-            octokit.log.warn("Successful request to GH API");
-        } else {
-            octokit.log.warn("Request to GH API failed");
+        for await (const response of octokit.paginate.iterator(octokit.rest.search.repos, parameters)) {
+            const found_repos = response.data;
+            found_repos.forEach((repo) => {
+                repos.push(repo.name);
+            });
         }
 
-        octokit.log.warn("Found number of repositories: " + res.data.total_count);
-        res.data.items.forEach((item) => {
-            repos.push(item.name);
-            octokit.log.warn(item.name);
-        });
+        repos.sort();
+
+        console.log(`Found ${repos.length} repositories (full list: ${repos})\n\n`);
 
         q = `org:${ORG_NAME} ${CODE_SEARCH_KEYWORD}`;
+        parameters = { q };
 
-        const parameters = { q };
+        const codeResults: CodeSearchResult[] = [];
 
         for await (const response of octokit.paginate.iterator(octokit.rest.search.code, parameters)) {
             const occurences = response.data;
-            console.log("%d code occurences found", occurences.length);
             occurences.forEach((item) => {
                 if (repos.includes(item.repository.name)) {
-                    console.log(`Repo: ${item.repository.name},  File: ${item.path}, url: ${item.html_url}`);
+                    codeResults.push({
+                        repositoryName: item.repository.name,
+                        itemPath: item.path,
+                        itemHtmlUrl: item.html_url,
+                    });
                 }
             });
         }
+
+        console.log(`${codeResults.length} code occurences found`);
+        codeResults.forEach((result) =>
+            console.log(`Repo: ${result.repositoryName},  File: ${result.itemPath}, url: ${result.itemHtmlUrl}`)
+        );
     } catch (e) {
         console.error("Caught Exception", e);
     }
