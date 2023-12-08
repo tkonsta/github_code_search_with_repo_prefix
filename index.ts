@@ -12,9 +12,20 @@ if (!ORG_NAME || !REPO_PREFIX || !CODE_SEARCH_KEYWORD) {
 }
 
 interface CodeSearchResult {
-    repositoryName: string;
-    itemPath: string;
-    itemHtmlUrl: string;
+    path: string;
+    htmlUrl: string;
+}
+
+type CodeSearchResultsPerRepo = {[repoName: string]: CodeSearchResult[]};
+
+
+async function addToCodeResults(codeResults: CodeSearchResultsPerRepo, repo: string, item: CodeSearchResult) {
+    const alreadyAvailableResults = codeResults[repo];
+    if (!alreadyAvailableResults) {
+        codeResults[repo] = [];
+    }
+
+    codeResults[repo].push(item);
 }
 
 console.log(
@@ -74,25 +85,29 @@ const octokit = new Octokit({
         q = `org:${ORG_NAME} ${CODE_SEARCH_KEYWORD}`;
         parameters = { q };
 
-        const codeResults: CodeSearchResult[] = [];
+        const codeResults: CodeSearchResultsPerRepo = {};
+        let numberOfResults = 0;
 
         for await (const response of octokit.paginate.iterator(octokit.rest.search.code, parameters)) {
             const occurences = response.data;
             occurences.forEach((item) => {
                 if (repos.includes(item.repository.name)) {
-                    codeResults.push({
-                        repositoryName: item.repository.name,
-                        itemPath: item.path,
-                        itemHtmlUrl: item.html_url,
+                    numberOfResults++;
+                    addToCodeResults(codeResults, item.repository.name, {
+                        path: item.path,
+                        htmlUrl: item.html_url,
                     });
                 }
             });
         }
 
-        console.log(`${codeResults.length} code occurences found`);
-        codeResults.forEach((result) =>
-            console.log(`Repo: ${result.repositoryName},  File: ${result.itemPath}, url: ${result.itemHtmlUrl}`)
-        );
+        console.log(`${numberOfResults} code occurences found`);
+        for (let key in codeResults) {
+            console.log(`\nResults for repository ${key}`);
+            codeResults[key].forEach(item => {
+                console.log(`   File: ${item.path}, url: ${item.htmlUrl}`)
+            })
+        }        
     } catch (e) {
         console.error("Caught Exception", e);
     }
