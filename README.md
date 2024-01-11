@@ -8,10 +8,15 @@ Clone the repo and create a file named `.env` in the folder with the following c
 ```
 ORG_NAME=
 REPO_PREFIX=
+FILE_NAME=
 CODE_SEARCH_KEYWORD=
 ```
 
-Set the values for org, repo prefix and what you want to search for in code.
+Set the values with
+- ORG_NAME (required): GitHub organization
+- REPO_PREFIX (required): Prefix of repos which should be included in search
+- FILE_NAME (optional): File name pattern to search for. If FILE_NAME is given, then CODE_SEARCH_KEYWORD can be empty
+- CODE_SEARCH_KEYWORD (required if no FILE_NAME is given): The keyword you want to search for in the code
 
 Have a token with permissions to list repos in the environment as `GITHUB_TOKEN`.
 

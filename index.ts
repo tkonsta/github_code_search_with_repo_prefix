@@ -4,9 +4,10 @@ import { exit } from "process";
 
 const ORG_NAME = process.env.ORG_NAME;
 const REPO_PREFIX = process.env.REPO_PREFIX;
+const FILE_NAME = process.env.FILE_NAME;
 const CODE_SEARCH_KEYWORD = process.env.CODE_SEARCH_KEYWORD;
 
-if (!ORG_NAME || !REPO_PREFIX || !CODE_SEARCH_KEYWORD) {
+if (!ORG_NAME || !REPO_PREFIX || (!CODE_SEARCH_KEYWORD && !FILE_NAME)) {
     console.log("Missing parameters. Please set them in .env file!");
     exit(1);
 }
@@ -82,7 +83,12 @@ const octokit = new Octokit({
 
         console.log(`Found ${repos.length} repositories (full list: ${repos})\n\n`);
 
-        q = `org:${ORG_NAME} ${CODE_SEARCH_KEYWORD}`;
+        if (FILE_NAME) {
+            q = `org:${ORG_NAME} filename:${FILE_NAME} ${CODE_SEARCH_KEYWORD}`;
+        } else {
+            q = `org:${ORG_NAME} ${CODE_SEARCH_KEYWORD}`;
+        }
+        
         parameters = { q };
 
         const codeResults: CodeSearchResultsPerRepo = {};
