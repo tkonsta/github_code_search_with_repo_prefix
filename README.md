@@ -5,24 +5,42 @@ So if you have repos like `https://github.com/myorg/myteam-some-repo-1/` and `ht
 
 # How to use?
 
+## Preriquiste
+
+Have a token with permissions to list repos in the environment as `GITHUB_TOKEN`.
+
+## General set up
+
+There are two use cases supported:
+- Search for code
+- Search for files with a name pattern
+
+For both use cases:
+
 Clone the repo and create a file named `.env` in the folder with the following content:
 
 ```
 ORG_NAME=
 REPO_PREFIX=
-FILE_NAME=
-CODE_SEARCH_KEYWORD=
 ```
 
 Set the values with
 - ORG_NAME (required): GitHub organization
 - REPO_PREFIX (required): Prefix of repos which should be included in search
-- FILE_NAME (optional): File name pattern to search for. If FILE_NAME is given, then CODE_SEARCH_KEYWORD can be empty
-- CODE_SEARCH_KEYWORD (required if no FILE_NAME is given): The keyword you want to search for in the code
 
-Have a token with permissions to list repos in the environment as `GITHUB_TOKEN`.
+## Use case: code search
 
-Then run with 
+just run `./run.sh <code-search-keyword>`
+
+or (old way) add to the `.env` file the following variable:
+`CODE_SEARCH_KEYWORD=<code>`
+with the keyword you want to search for in the code
+
+## Use case file pattern search:
+
+Add to the `.env` file the following variable:
+`FILE_NAME=<pattern>`
+with a file name pattern to search for, then run 
 
 ```
 npx ts-node index.ts
