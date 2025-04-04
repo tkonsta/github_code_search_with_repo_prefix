@@ -74,7 +74,7 @@ const octokit = new Octokit({
 
         for await (const response of octokit.paginate.iterator(octokit.rest.search.repos, parameters)) {
             const found_repos = response.data;
-            found_repos.forEach((repo) => {
+            found_repos.forEach((repo: any) => {
                 repos.push(repo.name);
             });
         }
@@ -96,7 +96,7 @@ const octokit = new Octokit({
 
         for await (const response of octokit.paginate.iterator(octokit.rest.search.code, parameters)) {
             const occurences = response.data;
-            occurences.forEach((item) => {
+            occurences.forEach((item: any) => {
                 if (repos.includes(item.repository.name)) {
                     numberOfResults++;
                     addToCodeResults(codeResults, item.repository.name, {
