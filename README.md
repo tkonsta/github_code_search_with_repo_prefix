@@ -1,5 +1,7 @@
 # What is it?
-A small typescript tool to search for code in GH in a given org with a given repository prefix (e.g. a team name)
+A small typescript tool to search for code in GH in a given org with a given repository prefix (e.g. a team name).
+
+So if you have repos like `https://github.com/myorg/myteam-some-repo-1/` and `https://github.com/myorg/myteam-some-repo-2/`, but there are also repos like `https://github.com/myorg/anotherteam-some-repo-1/`, then this tool allows you to limit the search to only the repos of `myteam`
 
 # How to use?
 
