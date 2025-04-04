@@ -36,7 +36,7 @@ or (old way) add to the `.env` file the following variable:
 `CODE_SEARCH_KEYWORD=<code>`
 with the keyword you want to search for in the code
 
-## Use case file pattern search:
+## Use case: file pattern search
 
 Add to the `.env` file the following variable:
 `FILE_NAME=<pattern>`
