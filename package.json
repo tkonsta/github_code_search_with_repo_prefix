@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@octokit/plugin-throttling": "9.6.1",
+    "@octokit/plugin-throttling": "10.0.0",
     "dotenv": "16.4.7",
     "octokit": "4.1.2"
   },
