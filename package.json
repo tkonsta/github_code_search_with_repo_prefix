@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@octokit/plugin-throttling": "11.0.1",
-    "dotenv": "17.2.0",
+    "dotenv": "17.2.1",
     "octokit": "5.0.3"
   },
   "devDependencies": {
